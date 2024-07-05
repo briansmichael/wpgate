@@ -472,6 +472,7 @@ def add_access(tn, command, new_tn, role_id, property_id):
 
 def remove_access(tn, command, old_tn, property_id):
     # TODO ensure user performing delete has access to delete the user
+    # TODO only admin can remove banned TNs
     if user_exists(old_tn):
         config = load_config()
         sql = "DELETE FROM users WHERE id = '{0}';".format(get_id_for_user(old_tn))
