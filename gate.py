@@ -1,6 +1,7 @@
 import psycopg2
 import sys
 import time
+import re
 import RPi.GPIO as GPIO
 from time import sleep
 from configparser import ConfigParser
@@ -348,6 +349,18 @@ def open_gate(tn, command):
     sleep(2)
     GPIO.output(17, False)
 
+def get_owners_for_property(house_number):
+    config = load_config()
+    sql = "SELECT u.phone_number FROM users u, property p WHERE u.user_role_id in (3, 4) AND u.property_id = p.id AND p.house_number = '{0}';".format(house_number)
+    try :
+        with psycopg2.connect(**config) as conn:
+            with conn.cursor() as cur:
+                cur.execute(sql)
+                return cur.fetchall()
+    except (Exception, psycopg2.DatabaseError) as error:
+        print(error)
+    return None
+
 def access_list(tn, command):
     config = load_config()
     sql = "SELECT u.phone_number, ur.role_name FROM users u, user_roles ur WHERE u.user_role_id = ur.id AND u.property_id = '{0}';".format(get_property_id_for_user(tn))
@@ -470,7 +483,16 @@ def remove_access(tn, command, old_tn, property_id):
             print(error)
 
 def guest(tn, command):
-    print("TODO")
+    house_number = None
+    for mo in re.finditer(r'\d+(\d*)?', command):
+        house_number = mo.group()
+    if house_number:
+        property_id = get_id_for_property(house_number)
+        home_owner_msg = re.sub(r'^.*?\s', "", command)
+        filename = tn, ".guest.", int(time.time())
+        for owner in get_owners_for_property(house_number):
+            write_text_msg(filename, owner, home_owner_msg)
+            add_history(get_id_for_user(owner), property_id, tn, command, 8)
 
 def help_response(tn, command, user_role_id):
     to = tn
