@@ -40,3 +40,16 @@ CREATE TABLE IF NOT EXISTS history(
     foreign key (action_id) references actions(id)
 ) partition by list(event_date);
 
+INSERT INTO user_roles (role_name, description) VALUES ('BANNED', 'Individuals explicitely denied access');
+INSERT INTO user_roles (role_name, description) VALUES ('RESIDENT', 'Any resident of the community, including owners, family members, long-term guests, etc.');
+INSERT INTO user_roles (role_name, description) VALUES ('OWNER', 'Designated owner of a property.  Will receive msgs upon access request to their property');
+INSERT INTO user_roles (role_name, description) VALUES ('ADMIN', 'System administrator');
+
+INSERT INTO actions(action_name, description) VALUES ('GATE_OPENED', 'Gate open command sent to gate controller');
+INSERT INTO actions(action_name, description) VALUES ('HELP', 'Help response msg returned to requestor');
+INSERT INTO actions(action_name, description) VALUES ('ACCESS_LIST', 'Depending upon role, respond with property access configuration');
+INSERT INTO actions(action_name, description) VALUES ('ACCESS_HISTORY', 'Depending upon role, respond with property access history');
+INSERT INTO actions(action_name, description) VALUES ('USER_ADDED', 'User added to a property');
+INSERT INTO actions(action_name, description) VALUES ('USER_REMOVED', 'User removed from a property');
+INSERT INTO actions(action_name, description) VALUES ('USER_BANNED', 'User banned from a property');
+INSERT INTO actions(action_name, description) VALUES ('GUEST', 'Guest message');
