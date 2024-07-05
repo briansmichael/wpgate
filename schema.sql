@@ -31,7 +31,7 @@ CREATE TABLE IF NOT EXISTS history(
     user_id integer,
     event_date varchar(15) NOT NULL,
     event_time timestamp default current_timestamp,
-    guest_tn bigint,
+    gate_msg_tn bigint,
     gate_msg_text varchar(1000),
     action_id integer NOT NULL,
     primary key (id, event_date),

@@ -218,11 +218,15 @@ def delete_user(id):
         print(error)
     return id
 
-def add_history(user_id, property_id, guest_tn, gate_msg_text, action_id):
+def add_history(user_id, property_id, gate_msg_tn, gate_msg_text, action_id):
     ensure_history_partition_is_active()
     date = get_partition_date()
     config = load_config()
-    sql = "INSERT INTO history (property_id, user_id, guest_tn, gate_msg_text, action_id, event_date) VALUES ('{0}', '{1}', '{2}', '{3}', '{4}', '{5}') RETURNING id;".format(property_id, user_id, guest_tn, gate_msg_text, action_id, date)
+    if not user_id:
+        user_id = -1
+    if not property_id:
+        property_id = -1
+    sql = "INSERT INTO history (property_id, user_id, gate_msg_tn, gate_msg_text, action_id, event_date) VALUES ('{0}', '{1}', '{2}', '{3}', '{4}', '{5}') RETURNING id;".format(property_id, user_id, gate_msg_tn, gate_msg_text, action_id, date)
     history_id = None
     try:
         with psycopg2.connect(**config) as conn:
@@ -345,7 +349,7 @@ def delete_history_partition_table():
 def open_gate(tn, command):
     print("Opening gate!")
     GPIO.output(17, True)
-    add_history(get_id_for_user(tn), get_property_id_for_user(tn), -1, command, 1)
+    add_history(get_id_for_user(tn), get_property_id_for_user(tn), tn, command, 1)
     sleep(2)
     GPIO.output(17, False)
 
@@ -365,71 +369,71 @@ def access_list(tn, command):
     config = load_config()
     sql = "SELECT u.phone_number, ur.role_name FROM users u, user_roles ur WHERE u.user_role_id = ur.id AND u.property_id = '{0}';".format(get_property_id_for_user(tn))
     to = tn
-    body = None
-    filename = tn, ".list.", int(time.time())
+    body = "Phone Number,User Role"
+    filename = "{0}{1}{2}".format(tn, ".list.", int(time.time()))
     try :
         with psycopg2.connect(**config) as conn:
             with conn.cursor() as cur:
                 cur.execute(sql)
                 rows = cur.fetchall()
                 for row in rows:
-                    body = body, "\n{0},{1}".format(row[0], row[1])
+                    body = "{0}{1}".format(body, "\n{0},{1}".format(row[0], row[1]))
         write_text_msg(filename, to, body)
-        add_history(get_id_for_user(tn), get_property_id_for_user(tn), -1, command, 3)
+        add_history(get_id_for_user(tn), get_property_id_for_user(tn), tn, command, 3)
     except (Exception, psycopg2.DatabaseError) as error:
         print(error)
 
 def access_list_all(tn, command):
     config = load_config()
-    sql = "SELECT u.phone_number, ur.role_name FROM users u, user_roles ur WHERE u.user_role_id = ur.id;"
+    sql = "SELECT u.phone_number, ur.role_name, p.house_number FROM users u, user_roles ur, property p WHERE p.id = u.property_id AND u.user_role_id = ur.id;"
     to = tn
-    body = None
-    filename = tn, ".list_all.", int(time.time())
+    body = "Phone Number,User Role,House Number"
+    filename = "{0}{1}{2}".format(tn, ".list_all.", int(time.time()))
     try :
         with psycopg2.connect(**config) as conn:
             with conn.cursor() as cur:
                 cur.execute(sql)
                 rows = cur.fetchall()
                 for row in rows:
-                    body = body, "\n{0},{1}".format(row[0], row[1])
+                    body = "{0}{1}".format(body, "\n{0},{1},{2}".format(row[0], row[1], row[2]))
         write_text_msg(filename, to, body)
-        add_history(get_id_for_user(tn), get_property_id_for_user(tn), -1, command, 3)
+        add_history(get_id_for_user(tn), get_property_id_for_user(tn), tn, command, 3)
     except (Exception, psycopg2.DatabaseError) as error:
         print(error)
 
 def access_history(tn, command):
     config = load_config()
-    sql = "SELECT u2.phone_number, event_time, guest_tn, gate_msg_text, a.action_name FROM actions a, users u, users u2, history h WHERE a.id = h.action_id AND u.property_id = h.property_id AND u2.id = h.user_id AND u.property_id = '{0}';".format(get_property_id_for_user(tn))
+    sql = "SELECT u2.phone_number, event_time, gate_msg_tn, gate_msg_text, a.action_name FROM actions a, users u, users u2, history h WHERE a.id = h.action_id AND u.property_id = h.property_id AND u2.id = h.user_id AND u.property_id = '{0}';".format(get_property_id_for_user(tn))
     to = tn
-    body = None
-    filename = tn, ".history.", int(time.time())
+    body = "Phone Number,Event Time,Gate Msg TN,Gate Msg Text,Action Performed"
+    filename = "{0}{1}{2}".format(tn, ".history.", int(time.time()))
     try :
         with psycopg2.connect(**config) as conn:
             with conn.cursor() as cur:
                 cur.execute(sql)
                 rows = cur.fetchall()
                 for row in rows:
-                    body = body, "\n{0},{1},{2},{3},{4}".format(row[0], row[1], row[2], row[3], row[4])
+                    body = "{0}{1}".format(body, "\n{0},{1},{2},{3},{4}".format(row[0], row[1], row[2], row[3], row[4]))
         write_text_msg(filename, to, body)
-        add_history(get_id_for_user(tn), get_property_id_for_user(tn), -1, command, 4)
+        add_history(get_id_for_user(tn), get_property_id_for_user(tn), tn, command, 4)
     except (Exception, psycopg2.DatabaseError) as error:
         print(error)
 
 def access_history_all(tn, command):
     config = load_config()
-    sql = "SELECT u2.phone_number, event_time, guest_tn, gate_msg_text, a.action_name FROM actions a, users u, users u2, history h WHERE a.id = h.action_id AND u.property_id = h.property_id AND u2.id = h.user_id;"
+    sql = "SELECT u2.phone_number, event_time, gate_msg_tn, gate_msg_text, a.action_name, p.house_number FROM actions a, users u, users u2, history h, property p WHERE h.property_id = p.id AND a.id = h.action_id AND u.property_id = h.property_id AND u2.id = h.user_id;"
     to = tn
-    body = None
-    filename = tn, ".history_all.", int(time.time())
+    body = "Phone Number,Event Time,Gate Msg TN,Gate Msg Text,Action Performed,House Number"
+    filename = "{0}{1}{2}".format(tn, ".history_all.", int(time.time()))
     try :
         with psycopg2.connect(**config) as conn:
             with conn.cursor() as cur:
                 cur.execute(sql)
                 rows = cur.fetchall()
                 for row in rows:
-                    body = body, "\n{0},{1},{2},{3},{4}".format(row[0], row[1], row[2], row[3], row[4])
+                    body = "{0}{1}".format(body, "\n{0},{1},{2},{3},{4},{5}".format(row[0], row[1], row[2], row[3], row[4], row[5]))
         write_text_msg(filename, to, body)
-        add_history(get_id_for_user(tn), get_property_id_for_user(tn), -1, command, 4)
+        add_history(get_id_for_user(tn), get_property_id_for_user(tn), tn, command, 4)
     except (Exception, psycopg2.DatabaseError) as error:
         print(error)
 
@@ -449,36 +453,38 @@ def user_exists(tn):
     return exists
 
 def add_access(tn, command, new_tn, role_id, property_id):
+    # TODO added users cannot have a role greater than the user performing the add operation
     if not user_exists(new_tn):
         config = load_config()
         sql = "INSERT INTO users (phone_number, user_role_id, property_id) VALUES ({0}, {1}, {2});".format(new_tn, role_id, property_id)
         to = tn
         body = None
-        filename = tn, ".add_access.", int(time.time())
+        filename = "{0}{1}{2}".format(tn, ".add_access.", int(time.time()))
         try :
             with psycopg2.connect(**config) as conn:
                 with conn.cursor() as cur:
                     cur.execute(sql)
                     body = "{0} added as {1} to house number {2}".format(new_tn, get_role_name_for_id(role_id), get_house_number_for_property_id(property_id))
             write_text_msg(filename, to, body)
-            add_history(get_id_for_user(tn), get_property_id_for_user(tn), -1, command, 4)
+            add_history(get_id_for_user(tn), get_property_id_for_user(tn), tn, command, 5)
         except (Exception, psycopg2.DatabaseError) as error:
             print(error)
 
 def remove_access(tn, command, old_tn, property_id):
-    if not user_exists(old_tn):
+    # TODO ensure user performing delete has access to delete the user
+    if user_exists(old_tn):
         config = load_config()
-        sql = "DELETE FROM users WHERE id = '{0}';".format(user_id)
+        sql = "DELETE FROM users WHERE id = '{0}';".format(get_id_for_user(old_tn))
         to = tn
         body = None
-        filename = tn, ".remove_access.", int(time.time())
+        filename = "{0}{1}{2}".format(tn, ".remove_access.", int(time.time()))
         try :
             with psycopg2.connect(**config) as conn:
                 with conn.cursor() as cur:
                     cur.execute(sql)
                     body = "{0} removed from house number {1}".format(old_tn, get_house_number_for_property_id(property_id))
             write_text_msg(filename, to, body)
-            add_history(get_id_for_user(tn), get_property_id_for_user(tn), -1, command, 4)
+            add_history(get_id_for_user(tn), get_property_id_for_user(tn), tn, command, 6)
         except (Exception, psycopg2.DatabaseError) as error:
             print(error)
 
@@ -489,7 +495,7 @@ def guest(tn, command):
     if house_number:
         property_id = get_id_for_property(house_number)
         home_owner_msg = re.sub(r'^.*?\s', "", command)
-        filename = tn, ".guest.", int(time.time())
+        filename = "{0}{1}{2}".format(tn, ".guest.", int(time.time()))
         for owner in get_owners_for_property(house_number):
             write_text_msg(filename, owner, home_owner_msg)
             add_history(get_id_for_user(owner), property_id, tn, command, 8)
@@ -497,17 +503,17 @@ def guest(tn, command):
 def help_response(tn, command, user_role_id):
     to = tn
     body = None
-    filename = tn, ".help.", int(time.time())
+    filename = "{0}{1}{2}".format(tn, ".help.", int(time.time()))
     if user_role_id == 1: # Banned
         body = "This number is not allowed to access this system"
     elif user_role_id == 2: # Resident
         body = "The following options are available:\n\n'help' to see this message\n'open' - to open the gate"
     elif user_role_id == 3: # Property owner
-        body = "The following options are available:\n\n'help' to see this message\n'open' - to open the gate\n'access list' - to see the access configuration for your property\n'history' - to see the usage history for your property"
+        body = "The following options are available:\n\n'help' to see this message\n'open' - to open the gate\n'access list' - to see the access configuration for your property\n'history' - to see the usage history for your property\n'add <<tn>> <<role>>' - adds a TN to access property (example: add 4048765309 resident)\n'remove <<tn>>' - removes a TN from the system (example: remove 4048675309)"
     elif user_role_id == 4: # Admin
-        body = "The following options are available:\n\n'help' to see this message\n'open' - to open the gate\n'access list' - to see the access configuration for your property\n'history' - to see the usage history for your property\n'access list all' - to see the access configuration for all properties\n'history all' - to see the usage history for all properties"
+        body = "The following options are available:\n\n'help' to see this message\n'open' - to open the gate\n'access list' - to see the access configuration for your property\n'history' - to see the usage history for your property\n'access list all' - to see the access configuration for all properties\n'history all' - to see the usage history for all properties\n'add <<tn>> <<role>> <<house number>>' - adds a TN to access property (example: add 4048765309 resident 3012)\n'remove <<tn>>' - removes a TN from the system (example: remove 4048675309)\n'ban <<tn>>' - bans a TN from being to interact with the system (example: ban 4048675309)"
     else:
-        body = "Send a message like the provided example, be sure the house number for the property to which you are visiting is at the beginning of the message.\n\nExample '3021 This is George, please open the gate'"
+        body = "Send a message like the provided example, be sure the house number for the property to which you are visiting is at the beginning of the message.\n\nExample: '3021 This is George, please open the gate'"
     write_text_msg(filename, to, body)
     add_history(get_id_for_user(tn), get_property_id_for_user(tn), tn, command, 2)
 
@@ -519,31 +525,34 @@ def initGPIO():
 
 def handle_msg(tn, command, user_role_id):
     if user_role_id > 3: # ADMIN
-        if command == "access list all":
+        if command.lower() == "access list all":
             access_list_all(tn, command)
-        if command == "access history all":
+        if command.lower() == "access history all":
             access_history_all(tn, command)
+        if command.lower() == "ban ...":
+            #ban_access(tn, command, old_tn, get_property_id_for_user(tn))
+            print("TODO")
     if user_role_id > 2: # OWNER or higher
-        if command == "add ...":
+        if command.lower() == "add ...":
             #add_access(tn, command, new_tn, role_id, get_property_id_for_user(tn))
             print("TODO")
-        if command == "remove ...":
+        if command.lower() == "remove ...":
             #remove_access(tn, command, old_tn, get_property_id_for_user(tn))
             print("TODO")
-        if command == "access list":
+        if command.lower() == "access list":
             access_list(tn, command)
-        if command == "access history":
+        if command.lower() == "access history":
             access_history(tn, command)
     if user_role_id > 1: # RESIDENT or higher
-        if command == "open":
+        if command.lower() == "open":
             open_gate(tn, command)
-    if command == "<house number> This is <guest name>, please open the gate.":
+    if re.search(r'^[0-9]*?\s', command):
         guest(tn, command)
-    if command == "help":
+    if command.lower() == "help":
         help_response(tn, command, user_role_id)
 
 if __name__ == '__main__':
     initGPIO()
     if sys.argv[1] == 'RECEIVED':
         msg = read_text_msg(sys.argv[2])
-        handle_msg(msg[0], msg[1].strip().lower(), get_role_id_for_tn(msg[0]))
+        handle_msg(msg[0], msg[1].strip(), get_role_id_for_tn(msg[0]))
