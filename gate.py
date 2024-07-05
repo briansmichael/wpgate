@@ -496,12 +496,12 @@ def initGPIO():
     GPIO.output(17, False)
 
 def handle_msg(tn, command, user_role_id):
-    if user_role_id > 3: #ADMIN
+    if user_role_id > 3: # ADMIN
         if command == "access list all":
             access_list_all(tn, command)
         if command == "access history all":
             access_history_all(tn, command)
-    if user_role_id > 2: #PROPERTY_OWNER or higher
+    if user_role_id > 2: # OWNER or higher
         if command == "add ...":
             #add_access(tn, command, new_tn, role_id, get_property_id_for_user(tn))
             print("TODO")
@@ -512,7 +512,7 @@ def handle_msg(tn, command, user_role_id):
             access_list(tn, command)
         if command == "access history":
             access_history(tn, command)
-    if user_role_id > 1: #RESIDENT or higher
+    if user_role_id > 1: # RESIDENT or higher
         if command == "open":
             open_gate(tn, command)
     if command == "<house number> This is <guest name>, please open the gate.":
