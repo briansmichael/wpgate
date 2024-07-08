@@ -413,7 +413,7 @@ def open_gate(tn, command):
 def access_list(tn, command):
     """Ex: access list"""
     config = load_config()
-    sql = "SELECT u.phone_number, ur.role_name FROM users u, user_roles ur WHERE u.user_role_id = ur.id AND u.property_id = '{0}';".format(get_property_id_for_user(tn))
+    sql = "SELECT DISTINCT u.phone_number, ur.role_name FROM users u, user_roles ur WHERE u.user_role_id = ur.id AND u.property_id = '{0}';".format(get_property_id_for_user(tn))
     to = tn
     body = "Phone Number,User Role"
     filename = "{0}{1}{2}".format(tn, ".list.", int(time.time()))
@@ -432,7 +432,7 @@ def access_list(tn, command):
 def access_list_all(tn, command):
     """Ex: access list all"""
     config = load_config()
-    sql = "SELECT u.phone_number, ur.role_name, p.house_number FROM users u, user_roles ur, property p WHERE p.id = u.property_id AND u.user_role_id = ur.id;"
+    sql = "SELECT DISTINCT u.phone_number, ur.role_name, p.house_number FROM users u, user_roles ur, property p WHERE p.id = u.property_id AND u.user_role_id = ur.id;"
     to = tn
     body = "Phone Number,User Role,House Number"
     filename = "{0}{1}{2}".format(tn, ".list_all.", int(time.time()))
@@ -451,7 +451,7 @@ def access_list_all(tn, command):
 def access_history(tn, command):
     """Ex: history"""
     config = load_config()
-    sql = "SELECT u2.phone_number, event_time, gate_msg_tn, gate_msg_text, a.action_name FROM actions a, users u, users u2, history h WHERE a.id = h.action_id AND u.property_id = h.property_id AND u2.id = h.user_id AND u.property_id = '{0}' ORDER BY event_time;".format(get_property_id_for_user(tn))
+    sql = "SELECT DISTINCT u2.phone_number, event_time, gate_msg_tn, gate_msg_text, a.action_name FROM actions a, users u, users u2, history h WHERE a.id = h.action_id AND u.property_id = h.property_id AND u2.id = h.user_id AND u.property_id = '{0}' ORDER BY event_time;".format(get_property_id_for_user(tn))
     to = tn
     body = "Phone Number,Event Time,Gate Msg TN,Gate Msg Text,Action Performed"
     filename = "{0}{1}{2}".format(tn, ".history.", int(time.time()))
@@ -470,7 +470,7 @@ def access_history(tn, command):
 def access_history_all(tn, command):
     """Ex: history all"""
     config = load_config()
-    sql = "SELECT u2.phone_number, event_time, gate_msg_tn, gate_msg_text, a.action_name, p.house_number FROM actions a, users u, users u2, history h, property p WHERE h.property_id = p.id AND a.id = h.action_id AND u.property_id = h.property_id AND u2.id = h.user_id ORDER BY event_time;"
+    sql = "SELECT DISTINCT u2.phone_number, event_time, gate_msg_tn, gate_msg_text, a.action_name, p.house_number FROM actions a, users u, users u2, history h, property p WHERE h.property_id = p.id AND a.id = h.action_id AND u.property_id = h.property_id AND u2.id = h.user_id ORDER BY event_time;"
     to = tn
     body = "Phone Number,Event Time,Gate Msg TN,Gate Msg Text,Action Performed,House Number"
     filename = "{0}{1}{2}".format(tn, ".history_all.", int(time.time()))
