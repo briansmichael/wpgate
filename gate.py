@@ -217,46 +217,6 @@ def user_exists(tn):
         print(error)
     return exists
 
-def add_user(tn, role, property):
-    config = load_config()
-    sql = "INSERT INTO users (phone_number, user_role, property_id) VALUES ('{0}', '{1}', '{2}') RETURNING id;".format(tn, role.upper(), property)
-    user_id = None
-    try:
-        with psycopg2.connect(**config) as conn:
-            with conn.cursor() as cur:
-                cur.execute(sql)
-                rows = cur.fetchone()
-                if rows:
-                    user_id = rows[0]
-                conn.commit()
-    except (Exception, psycopg2.DatabaseError) as error:
-        print(error)
-    return user_id
-
-def update_user(id, tn, role, property):
-    config = load_config()
-    sql = "UPDATE users SET phone_number = '{0}', user_role = '{1}', property_id = '{2}' WHERE id = '{3}';".format(tn, role.upper(), property, id)
-    try:
-        with psycopg2.connect(**config) as conn:
-            with conn.cursor() as cur:
-                cur.execute(sql)
-                conn.commit()
-    except (Exception, psycopg2.DatabaseError) as error:
-        print(error)
-    return id
-
-def delete_user(id):
-    config = load_config()
-    sql = "DELETE FROM users WHERE id = '{0}';".format(id)
-    try:
-        with psycopg2.connect(**config) as conn:
-            with conn.cursor() as cur:
-                cur.execute(sql)
-                conn.commit()
-    except (Exception, psycopg2.DatabaseError) as error:
-        print(error)
-    return id
-
 def get_owners_for_property(house_number):
     config = load_config()
     sql = "SELECT u.phone_number FROM users u, property p WHERE u.user_role_id in (3, 4) AND u.property_id = p.id AND p.house_number = '{0}';".format(house_number)
@@ -541,7 +501,7 @@ def add_access(tn, command):
     if not user_exists(command_parts[1]):
         if user_role_id >= new_user_role_id and new_user_role_id > 1:
             config = load_config()
-            sql = "INSERT INTO users (phone_number, user_role_id, property_id) VALUES ({0}, {1}, {2});".format(command_parts[1], command_parts[2], property_id)
+            sql = "INSERT INTO users (phone_number, user_role_id, property_id) VALUES ('{0}', '{1}', '{2}');".format(command_parts[1], new_user_role_id, property_id)
             to = tn
             body = None
             filename = "{0}{1}{2}".format(tn, ".add_access.", int(time.time()))
