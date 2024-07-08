@@ -610,14 +610,14 @@ def help_response(tn, command, user_role_id):
     filename = "{0}{1}{2}".format(tn, ".help.", int(time.time()))
     if user_role_id == 1: # Banned
         body = "This number is not allowed to access this system"
-    elif user_role_id == 2: # Resident
+    elif user_role_id == 3: # Resident
         body = "The following options are available:\n\n- 'help' to see this message\n- 'open' to open the gate"
-    elif user_role_id == 3: # Property owner
+    elif user_role_id == 4: # Property owner
         body = "The following options are available:\n\n- 'help' to see this message\n- 'open' to open the gate\n- 'access list' to see the access configuration for your property\n- 'history' to see the usage history for your property\n- 'add <<tn>> <<role>>' adds a TN to access property (example: add 4048675309 resident)\n- 'remove <<tn>>' removes a TN from the system (example: remove 4048675309)"
-    elif user_role_id == 4: # Admin
+    elif user_role_id == 5: # Admin
         body = "The following options are available:\n\n- 'help' to see this message\n- 'open' to open the gate\n- 'access list' to see the access configuration for your property\n- 'history' to see the usage history for your property\n- 'access list all' to see the access configuration for all properties\n- 'history all' to see the usage history for all properties\n- 'add <<tn>> <<role>> <<house number>>' adds a TN to access property (example: add 4048675309 resident 3012)\n- 'remove <<tn>>' removes a TN from the system (example: remove 4048675309)\n- 'ban <<tn>>' bans a TN from being able to interact with the system (example: ban 4048675309)"
     else:
-        body = "Send a message like the provided example, be sure the house number for the property to which you are visiting is at the beginning of the message.\n\nExample: '3021 This is George, please open the gate'"
+        body = "Send a message like the provided example, be sure the house number for the property to which you are visiting is at the beginning of the message.\n\nExample:\n 3021 This is George, please open the gate"
     write_text_msg(filename, to, body)
     add_history(get_id_for_user(tn), get_property_id_for_user(tn), tn, command, 2)
 
