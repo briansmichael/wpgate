@@ -491,7 +491,7 @@ def add_access(tn, command):
     command_parts = command.split()
     property_id = None
     if len(command_parts) == 4:
-        property_id = command_parts[3]
+        property_id = get_id_for_property(command_parts[3])
     elif len(command_parts) == 3:
         property_id = get_property_id_for_user(tn)
     else:
@@ -520,7 +520,7 @@ def remove_access(tn, command):
     command_parts = command.split()
     property_id = None
     if len(command_parts) == 3:
-        property_id = command_parts[2]
+        property_id = get_id_for_property(command_parts[2])
     elif len(command_parts) == 2:
         property_id = get_property_id_for_user(tn)
     else:
