@@ -12,14 +12,26 @@ In addition to these methods, another method of open the gate has been added, wh
 ## <a name="Help">System Help</a>
 At any time, any user may send a message to the gate text message system requesting a summary of the commands that user may use to interact with the system.  To do this, the user must simply send a tedt message with the word `help`, and the system will determine the user's capabilities within the system and respond accordlingly.
 
-### Guest example
-TBD
+### Guest example - help response
+Send a message like the provided example, be sure the house number for the property to which you are visiting is at the beginning of the message.
 
-### Resident example
-TBD
+Example: '3021 This is George, please open the gate'
 
-### Owner example
-TBD
+### Resident example - help response
+The following options are available:
+
+- 'help' to see this message
+- 'open' to open the gate
+
+### Owner example - help response
+The following options are available:
+
+- 'help' to see this message
+- 'open' to open the gate
+- 'access list' to see the access configuration for your property
+- 'history' to see the usage history for your property
+- 'add << tn >> << role >>' adds a TN to access property (example: add 4048675309 resident)
+- 'remove << tn >>' removes a TN from the system (example: remove 4048675309)
 
 ## <a name="Guests">Guests</a>
 Guests are any individual for which that individual's cell phone number is not recognized by the gate text message system.  
@@ -88,7 +100,7 @@ Below is a short summary of all the possible ways to interact with the gate text
 
 ### Owners (includes `Residents` commands)
 * access list - Responds to the requestor with property access configuration
-* history - Responds to the requestor with property access history
+* history - Responds to the requestor with property access history.  See [history note](#history) regarding the history information available.
 * add << 10-digit phone number >> << role >> - Adds a phone number to the requestor's property configuration, assuming the phone number is not already configured in the system.  See [residents](#residents)
 * remove << 10-digit phone number >> << role >> - Removes a phone number from the requestor's property configuration.  See [residents](#residents)
 
