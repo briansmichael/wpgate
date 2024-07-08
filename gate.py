@@ -175,7 +175,7 @@ def get_role_name_for_user_id(user_id):
 def get_role_id_for_tn(tn):
     config = load_config()
     sql = "SELECT user_role_id FROM users WHERE phone_number = '{0}';".format(tn)
-    user_role_id = None
+    user_role_id = 2 # Default to guest
     try :
         with psycopg2.connect(**config) as conn:
             with conn.cursor() as cur:
@@ -267,9 +267,9 @@ def add_history(user_id, property_id, gate_msg_tn, gate_msg_text, action_id):
     date = get_partition_date()
     config = load_config()
     if not user_id:
-        user_id = -1
+        user_id = 1
     if not property_id:
-        property_id = -1
+        property_id = 1
     sql = "INSERT INTO history (property_id, user_id, gate_msg_tn, gate_msg_text, action_id, event_date) VALUES ('{0}', '{1}', '{2}', '{3}', '{4}', '{5}') RETURNING id;".format(property_id, user_id, gate_msg_tn, gate_msg_text, action_id, date)
     history_id = None
     try:
@@ -550,7 +550,7 @@ def ban_access(tn, command):
     user_role_id = get_role_id_for_tn(tn)
     if user_role_id > 3 and not user_exists(command_parts[1]):
         config = load_config()
-        sql = "INSERT INTO users (phone_number, user_role_id, property_id) VALUES ('{0}', 1, -1);".format(command_parts[1])
+        sql = "INSERT INTO users (phone_number, user_role_id, property_id) VALUES ('{0}', 1, 1);".format(command_parts[1])
         to = tn
         body = None
         filename = "{0}{1}{2}".format(tn, ".banned.", int(time.time()))
@@ -565,7 +565,7 @@ def ban_access(tn, command):
             print(error)
     elif user_role_id > 3:
         config = load_config()
-        sql = "UPDATE users SET user_role_id = 1, property_id = -1 WHERE phone_number = '{0}';".format(command_parts[1])
+        sql = "UPDATE users SET user_role_id = 1, property_id = 1 WHERE phone_number = '{0}';".format(command_parts[1])
         to = tn
         body = None
         filename = "{0}{1}{2}".format(tn, ".banned.", int(time.time()))
@@ -625,14 +625,14 @@ def help_response(tn, command, user_role_id):
 ### Message handler #############################
 #################################################
 def handle_msg(tn, command, user_role_id):
-    if user_role_id > 3: # ADMIN
+    if user_role_id > 4: # ADMIN
         if command.lower() == "access list all":
             access_list_all(tn, command)
         if command.lower() == "access history all" or command.lower() == "history all":
             access_history_all(tn, command)
         if command.lower().startswith("ban"):
             ban_access(tn, command)
-    if user_role_id > 2: # OWNER or higher
+    if user_role_id > 3: # OWNER or higher
         if command.lower().startswith("add"):
             add_access(tn, command)
         if command.lower().startswith("remove"):
@@ -641,13 +641,14 @@ def handle_msg(tn, command, user_role_id):
             access_list(tn, command)
         if command.lower() == "access history" or command.lower() == "history":
             access_history(tn, command)
-    if user_role_id > 1: # RESIDENT or higher
+    if user_role_id > 2: # RESIDENT or higher
         if command.lower() == "open":
             open_gate(tn, command)
-    if re.search(r'^[0-9]*?\s', command):
-        guest(tn, command)
-    if command.lower() == "help":
-        help_response(tn, command, user_role_id)
+    if user_role_id > 1:
+        if re.search(r'^[0-9]*?\s', command):
+            guest(tn, command)
+        if command.lower() == "help":
+            help_response(tn, command, user_role_id)
 
 #################################################
 ### Main ########################################
