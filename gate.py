@@ -219,7 +219,7 @@ def user_exists(tn):
 
 def add_user(tn, role, property):
     config = load_config()
-    sql = "INSERT INTO users (phone_number, user_role, property_id) VALUES ('{0}', '{1}', '{2}') RETURNING id;".format(tn, role, property)
+    sql = "INSERT INTO users (phone_number, user_role, property_id) VALUES ('{0}', '{1}', '{2}') RETURNING id;".format(tn, role.upper(), property)
     user_id = None
     try:
         with psycopg2.connect(**config) as conn:
@@ -235,7 +235,7 @@ def add_user(tn, role, property):
 
 def update_user(id, tn, role, property):
     config = load_config()
-    sql = "UPDATE users SET phone_number = '{0}', user_role = '{1}', property_id = '{2}' WHERE id = '{3}';".format(tn, role, property, id)
+    sql = "UPDATE users SET phone_number = '{0}', user_role = '{1}', property_id = '{2}' WHERE id = '{3}';".format(tn, role.upper(), property, id)
     try:
         with psycopg2.connect(**config) as conn:
             with conn.cursor() as cur:
