@@ -40,6 +40,15 @@ CREATE TABLE IF NOT EXISTS history(
     foreign key (action_id) references actions(id)
 ) partition by list(event_date);
 
+CREATE TABLE IF NOT EXISTS inflight(
+    id uuid default gen_random_uuid(),
+    guest_tn bigint NOT NULL,
+    property_id integer NOT NULL,
+    request_time timestamp default current_timestamp,
+    primary key (id),
+    foreign key (property_id) references property(id)
+);
+
 INSERT INTO user_roles (role_name, description) VALUES ('BANNED', 'Individuals explicitely denied access');
 INSERT INTO user_roles (role_name, description) VALUES ('RESIDENT', 'Any resident of the community, including owners, family members, long-term guests, etc.');
 INSERT INTO user_roles (role_name, description) VALUES ('OWNER', 'Designated owner of a property.  Will receive msgs upon access request to their property');
