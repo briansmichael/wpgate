@@ -509,7 +509,7 @@ def add_access(tn, command):
                 with psycopg2.connect(**config) as conn:
                     with conn.cursor() as cur:
                         cur.execute(sql)
-                        body = "{0} added as {1} to house number {2}".format(command_parts[1], get_role_name_for_id(command_parts[2]), get_house_number_for_property_id(property_id))
+                        body = "{0} added as {1} to house number {2}".format(command_parts[1], get_role_name_for_id(new_user_role_id), get_house_number_for_property_id(property_id))
                 write_text_msg(filename, to, body)
                 add_history(get_id_for_user(tn), get_property_id_for_user(tn), tn, command, 5)
             except (Exception, psycopg2.DatabaseError) as error:
