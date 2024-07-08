@@ -630,7 +630,7 @@ def handle_msg(tn, command, user_role_id):
             access_list_all(tn, command)
         if command.lower() == "access history all" or command.lower() == "history all":
             access_history_all(tn, command)
-        if command.lower() == "ban ...":
+        if command.lower().startswith("ban"):
             ban_access(tn, command)
     if user_role_id > 2: # OWNER or higher
         if command.lower().startswith("add"):
