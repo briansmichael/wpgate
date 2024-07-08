@@ -628,7 +628,7 @@ def handle_msg(tn, command, user_role_id):
     if user_role_id > 3: # ADMIN
         if command.lower() == "access list all":
             access_list_all(tn, command)
-        if command.lower() == "access history all":
+        if command.lower() == "access history all" or command.lower() == "history all":
             access_history_all(tn, command)
         if command.lower() == "ban ...":
             ban_access(tn, command)
@@ -639,7 +639,7 @@ def handle_msg(tn, command, user_role_id):
             remove_access(tn, command)
         if command.lower() == "access list":
             access_list(tn, command)
-        if command.lower() == "access history":
+        if command.lower() == "access history" or command.lower() == "access history":
             access_history(tn, command)
     if user_role_id > 1: # RESIDENT or higher
         if command.lower() == "open":
