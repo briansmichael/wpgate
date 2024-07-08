@@ -451,7 +451,7 @@ def open_gate(tn, command):
     clear_inflight_operations()
 
 def access_list(tn, command):
-    """Ex: accesslist"""
+    """Ex: access list"""
     config = load_config()
     sql = "SELECT u.phone_number, ur.role_name FROM users u, user_roles ur WHERE u.user_role_id = ur.id AND u.property_id = '{0}';".format(get_property_id_for_user(tn))
     to = tn
@@ -470,7 +470,7 @@ def access_list(tn, command):
         print(error)
 
 def access_list_all(tn, command):
-    """Ex: accesslist all"""
+    """Ex: access list all"""
     config = load_config()
     sql = "SELECT u.phone_number, ur.role_name, p.house_number FROM users u, user_roles ur, property p WHERE p.id = u.property_id AND u.user_role_id = ur.id;"
     to = tn
@@ -593,7 +593,7 @@ def ban_access(tn, command):
         sql = "INSERT INTO users (phone_number, user_role_id, property_id) VALUES ('{0}', 1, -1);".format(command_parts[1])
         to = tn
         body = None
-        filename = "{0}{1}{2}".format(tn, ".remove_access.", int(time.time()))
+        filename = "{0}{1}{2}".format(tn, ".banned.", int(time.time()))
         try :
             with psycopg2.connect(**config) as conn:
                 with conn.cursor() as cur:
@@ -608,7 +608,7 @@ def ban_access(tn, command):
         sql = "UPDATE users SET user_role_id = 1, property_id = -1 WHERE phone_number = '{0}';".format(command_parts[1])
         to = tn
         body = None
-        filename = "{0}{1}{2}".format(tn, ".remove_access.", int(time.time()))
+        filename = "{0}{1}{2}".format(tn, ".banned.", int(time.time()))
         try :
             with psycopg2.connect(**config) as conn:
                 with conn.cursor() as cur:
