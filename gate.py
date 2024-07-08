@@ -639,7 +639,7 @@ def handle_msg(tn, command, user_role_id):
             remove_access(tn, command)
         if command.lower() == "access list":
             access_list(tn, command)
-        if command.lower() == "access history" or command.lower() == "access history":
+        if command.lower() == "access history" or command.lower() == "history":
             access_history(tn, command)
     if user_role_id > 1: # RESIDENT or higher
         if command.lower() == "open":
