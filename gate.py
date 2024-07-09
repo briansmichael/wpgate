@@ -219,7 +219,7 @@ def user_exists(tn):
 
 def get_owners_for_property(house_number):
     config = load_config()
-    sql = "SELECT u.phone_number FROM users u, property p WHERE u.user_role_id in (3, 4) AND u.property_id = p.id AND p.house_number = '{0}';".format(house_number)
+    sql = "SELECT u.phone_number FROM users u, property p WHERE u.user_role_id in (4, 5) AND u.property_id = p.id AND p.house_number = '{0}';".format(house_number)
     try :
         with psycopg2.connect(**config) as conn:
             with conn.cursor() as cur:
