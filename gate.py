@@ -490,10 +490,14 @@ def add_access(tn, command):
     """Ex: add 4048675309 resident 3021"""
     command_parts = command.split()
     property_id = None
+    new_user_role_id = None
     if len(command_parts) == 4:
         property_id = get_id_for_property(command_parts[3])
     elif len(command_parts) == 3:
         property_id = get_property_id_for_user(tn)
+    elif len(command_parts) == 2:
+        property_id = get_property_id_for_user(tn)
+        new_user_role_id = get_role_id_for_name("RESIDENT".lower())
     else:
         return
     user_role_id = get_role_id_for_tn(tn)
