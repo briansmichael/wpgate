@@ -13,17 +13,49 @@ In addition to these methods, another method of open the gate has been added, wh
 At any time, any user may send a message to the gate text message system requesting a summary of the commands that user may use to interact with the system.  To do this, the user must simply send a tedt message with the word `help`, and the system will determine the user's capabilities within the system and respond accordlingly.
 
 ### Guest example - help response
+```mermaid
+sequenceDiagram
+    autoNumber
+    actor guest as guest
+    participant rpi as Gate Text Msg System
+    participant gate as Gate
+
+    guest->>+rpi: help
+    rpi-->>-guest: help message
+```
+
 Send a message like the provided example, be sure the house number for the property to which you are visiting is at the beginning of the message.
 
 Example: '3021 This is George, please open the gate'
 
 ### Resident example - help response
+```mermaid
+sequenceDiagram
+    autoNumber
+    actor guest as Resident
+    participant rpi as Gate Text Msg System
+    participant gate as Gate
+
+    guest->>+rpi: help
+    rpi-->>-guest: help message
+```
+
 The following options are available:
 
 - 'help' to see this message
 - 'open' to open the gate
 
 ### Owner example - help response
+```mermaid
+sequenceDiagram
+    autoNumber
+    actor guest as Owner
+    participant rpi as Gate Text Msg System
+    participant gate as Gate
+
+    guest->>+rpi: help
+    rpi-->>-guest: help message
+```
 The following options are available:
 
 - 'help' to see this message
