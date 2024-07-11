@@ -1,4 +1,4 @@
-# Whispering Pines Gate - User's Guide
+# Whispering Pines Gate Text Messaging System - User's Guide
 
 ## <a name="systemoverview">System Overview</a>
 The Whispering Pines Trail gate has been in place for many years with several methods by which the gate might be opened.
@@ -24,6 +24,12 @@ sequenceDiagram
     rpi-->>-guest: help message
 ```
 
+Request:
+```
+help
+```
+
+Response:
 ```
 Send a message like the provided example, be sure the house number for the property to which you are visiting is at the beginning of the message.
 
@@ -42,6 +48,12 @@ sequenceDiagram
     rpi-->>-guest: help message
 ```
 
+Request:
+```
+help
+```
+
+Response:
 ```
 The following options are available:
 
@@ -61,6 +73,12 @@ sequenceDiagram
     rpi-->>-guest: help message
 ```
 
+Request:
+```
+help
+```
+
+Response:
 ```
 The following options are available:
 
