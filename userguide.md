@@ -86,11 +86,36 @@ Upon the guest sending their message, the text message system will check the mes
 For example: "3021 This is George from Amazon, please open the gate." will send the message "This is George from Amazon, please open the gate. (sent from 4048675309)" to all homeowners of the property located at 3021.  If no property exists at 3021, then the guest will receive a response indicating that their message was incorrect.
 
 ### Example Guest Scenario - requesting the gate be opened
+```mermaid
+sequenceDiagram
+    autoNumber
+    actor guest as Guest
+    participant qr as QR Code
+    participant rpi as Gate Text Msg System
+    actor owner as Home Owner
+    participant gate as Gate
+
+    guest->>+qr: scan code
+    qr-->>-guest: pre-populates text message in guest's phone
+    guest->>guest: replace house number and guest name
+    guest->>+rpi: send message
+    rpi->>rpi: evaluate message
+    rpi->>-owner: relay's guest's message
+    owner->>+rpi: sned 'open' message
+    rpi->>gate: trigger gate to open
+    rpi->>owner: gate is opening message
+    rpi->>-guest: gate is opening message
+```
 1. Guest arrives at the gate and scans the QR code using their cell phone.
 2. The QR code pre-populates a text message in the guest's phone with the gate's text message system's phone number and the message "<< house number >> This is << guest name >>, please open the gate."
-3. The guest replaces the << house number >> and << guest name >> portions of the message with whatever information is relevant to their visit, and sends the message
-4. The gate text message system receives and analyzes the message.  If the message is valid, the system then forwards the message to the home owner(s) of the property specified
-5. If (any of) the home owner(s) responds to the text message system (see resident portion of this guide), then the gate is opened, and the guest is allowed entry into the community.
+3. The guest replaces the << house number >> and << guest name >> portions of the message with whatever information is relevant to their visit.
+4. Guest sends the message
+5. The gate text message system receives and analyzes the message.  
+6. If the message is valid, the system then forwards the message to the home owner(s) of the property specified
+7. The home owner(s) responds to the request by sending an "open" text message back to the system.
+8. The gate is opened
+9. A message is sent to the owner that the gate is opening
+10. A message is sent to the guest that the gate is opening and the guest is allowed entry into the community.
 
 ## <a name="residents">Residents</a>
 Residents are any individuals for which that individual's cell phone number is recognized by the gate text message system.  There are 3 levels of access privilege within the Resident categorization of users.
