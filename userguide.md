@@ -13,17 +13,55 @@ In addition to these methods, another method of open the gate has been added, wh
 At any time, any user may send a message to the gate text message system requesting a summary of the commands that user may use to interact with the system.  To do this, the user must simply send a tedt message with the word `help`, and the system will determine the user's capabilities within the system and respond accordlingly.
 
 ### Guest example - help response
+```mermaid
+sequenceDiagram
+    autoNumber
+    actor guest as Guest
+    participant rpi as Gate Text Msg System
+    participant gate as Gate
+
+    guest->>+rpi: help
+    rpi-->>-guest: help message
+```
+
+```
 Send a message like the provided example, be sure the house number for the property to which you are visiting is at the beginning of the message.
 
 Example: '3021 This is George, please open the gate'
+```
 
 ### Resident example - help response
+```mermaid
+sequenceDiagram
+    autoNumber
+    actor guest as Resident
+    participant rpi as Gate Text Msg System
+    participant gate as Gate
+
+    guest->>+rpi: help
+    rpi-->>-guest: help message
+```
+
+```
 The following options are available:
 
 - 'help' to see this message
 - 'open' to open the gate
+```
 
 ### Owner example - help response
+```mermaid
+sequenceDiagram
+    autoNumber
+    actor guest as Owner
+    participant rpi as Gate Text Msg System
+    participant gate as Gate
+
+    guest->>+rpi: help
+    rpi-->>-guest: help message
+```
+
+```
 The following options are available:
 
 - 'help' to see this message
@@ -32,6 +70,7 @@ The following options are available:
 - 'history' to see the usage history for your property
 - 'add << tn >> << role (optional) >>' adds a TN to access property (example: add 4048675309).  The role of RESIDENT is the default
 - 'remove << tn >>' removes a TN from the system (example: remove 4048675309)
+```
 
 ## <a name="Guests">Guests</a>
 Guests are any individual for which that individual's cell phone number is not recognized by the gate text message system.  
@@ -47,11 +86,36 @@ Upon the guest sending their message, the text message system will check the mes
 For example: "3021 This is George from Amazon, please open the gate." will send the message "This is George from Amazon, please open the gate. (sent from 4048675309)" to all homeowners of the property located at 3021.  If no property exists at 3021, then the guest will receive a response indicating that their message was incorrect.
 
 ### Example Guest Scenario - requesting the gate be opened
+```mermaid
+sequenceDiagram
+    autoNumber
+    actor guest as Guest
+    participant qr as QR Code
+    participant rpi as Gate Text Msg System
+    actor owner as Home Owner
+    participant gate as Gate
+
+    guest->>+qr: scan code
+    qr-->>-guest: pre-populates text message in guest's phone
+    guest->>guest: replace house number and guest name
+    guest->>+rpi: send message
+    rpi->>rpi: evaluate message
+    rpi->>-owner: relay's guest's message
+    owner->>+rpi: send 'open' message
+    rpi->>gate: trigger gate to open
+    rpi->>owner: gate is opening message
+    rpi->>-guest: gate is opening message
+```
 1. Guest arrives at the gate and scans the QR code using their cell phone.
 2. The QR code pre-populates a text message in the guest's phone with the gate's text message system's phone number and the message "<< house number >> This is << guest name >>, please open the gate."
-3. The guest replaces the << house number >> and << guest name >> portions of the message with whatever information is relevant to their visit, and sends the message
-4. The gate text message system receives and analyzes the message.  If the message is valid, the system then forwards the message to the home owner(s) of the property specified
-5. If (any of) the home owner(s) responds to the text message system (see resident portion of this guide), then the gate is opened, and the guest is allowed entry into the community.
+3. The guest replaces the << house number >> and << guest name >> portions of the message with whatever information is relevant to their visit.
+4. Guest sends the message
+5. The gate text message system receives and analyzes the message.  
+6. If the message is valid, the system then forwards the message to the home owner(s) of the property specified
+7. The home owner(s) responds to the request by sending an "open" text message back to the system.
+8. The gate is opened
+9. A message is sent to the owner that the gate is opening
+10. A message is sent to the guest that the gate is opening and the guest is allowed entry into the community.
 
 ## <a name="residents">Residents</a>
 Residents are any individuals for which that individual's cell phone number is recognized by the gate text message system.  There are 3 levels of access privilege within the Resident categorization of users.
@@ -59,10 +123,23 @@ Residents are any individuals for which that individual's cell phone number is r
 2. Owner
 3. Admin
 
-### Example Resident Scenario - opening the gate
-1. Resident arrives at the gate.
-2. A "open" message is sent to the gate text message system.
-3. The gate text message system receives and analyzes the message.  If the message is valid, the gate is opened, and a response text message is sent back to the requestor indicating the gate is being opened.
+### Example Resident (or Home Owner) Scenario - opening the gate
+```mermaid
+sequenceDiagram
+    autoNumber
+    actor resident as Resident or Home Owner
+    participant rpi as Gate Text Msg System
+    participant gate as Gate
+
+    resident->>+rpi: send 'open' message
+    rpi->>rpi: evaluate message
+    rpi->>gate: trigger gate to open
+    rpi->>resident: gate is opening message
+```
+1. Resident arrives at the gate, and sends an "open" message
+2. The gate text message system receives and analyzes the message.
+3. The gate is opened
+4. A response text message is sent back to the requestor indicating the gate is being opened.
 
 ## <a name="owners">Owners</a>
 Home owners have additional features available to them to be able to self-administer access to their property.  These features include:
@@ -70,6 +147,18 @@ Home owners have additional features available to them to be able to self-admini
 * removing users from accessing their property
 * viewing their property access configuration
 * viewing the access history for their property
+
+### Example Home Owner Scenario - adding a user
+TBD
+
+### Example Home Owner Scenario - removing a user
+TBD
+
+### Example Home Owner Scenario - view property access configuration
+TBD
+
+### Example Home Owner Scenario - view access history
+TBD
 
 ## <a name="administrators">Administrators</a>
 Administrators have all the same abilities as home owners, plus the ability to administer property setup on-behalf of other home owners.  A separate `Administrators Guide` is available for system administrators.
@@ -80,6 +169,7 @@ Interaction history is maintained for up to 1 month in the gate text message sys
 ## <a name="roles">Roles</a>
 There are several roles used by the gate text message system.  These roles are used to allow certain users access to system functions applicable to their role within the community.  These roles include:
 
+* Guest - Any user not recognized by the system
 * Resident - A user with limited access to the gate text messaging system.  Typically family members of homeowners within the community
 * Owner - A user who is a homeowner within the community
 * Admin - A user with elevated priveleges, so as to be able to maintain the system or configure the system on behalf of other users.
