@@ -16,7 +16,7 @@ At any time, any user may send a message to the gate text message system request
 ```mermaid
 sequenceDiagram
     autoNumber
-    actor guest as guest
+    actor guest as Guest
     participant rpi as Gate Text Msg System
     participant gate as Gate
 
@@ -24,9 +24,11 @@ sequenceDiagram
     rpi-->>-guest: help message
 ```
 
+```
 Send a message like the provided example, be sure the house number for the property to which you are visiting is at the beginning of the message.
 
 Example: '3021 This is George, please open the gate'
+```
 
 ### Resident example - help response
 ```mermaid
@@ -40,10 +42,12 @@ sequenceDiagram
     rpi-->>-guest: help message
 ```
 
+```
 The following options are available:
 
 - 'help' to see this message
 - 'open' to open the gate
+```
 
 ### Owner example - help response
 ```mermaid
@@ -56,6 +60,8 @@ sequenceDiagram
     guest->>+rpi: help
     rpi-->>-guest: help message
 ```
+
+```
 The following options are available:
 
 - 'help' to see this message
@@ -64,6 +70,7 @@ The following options are available:
 - 'history' to see the usage history for your property
 - 'add << tn >> << role (optional) >>' adds a TN to access property (example: add 4048675309).  The role of RESIDENT is the default
 - 'remove << tn >>' removes a TN from the system (example: remove 4048675309)
+```
 
 ## <a name="Guests">Guests</a>
 Guests are any individual for which that individual's cell phone number is not recognized by the gate text message system.  
