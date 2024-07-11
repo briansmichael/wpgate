@@ -1,4 +1,4 @@
-# Whispering Pines Gate - User's Guide
+# Whispering Pines Gate Text Messaging System - User's Guide
 
 ## <a name="systemoverview">System Overview</a>
 The Whispering Pines Trail gate has been in place for many years with several methods by which the gate might be opened.
