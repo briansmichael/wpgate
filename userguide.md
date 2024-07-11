@@ -101,7 +101,7 @@ sequenceDiagram
     guest->>+rpi: send message
     rpi->>rpi: evaluate message
     rpi->>-owner: relay's guest's message
-    owner->>+rpi: sned 'open' message
+    owner->>+rpi: send 'open' message
     rpi->>gate: trigger gate to open
     rpi->>owner: gate is opening message
     rpi->>-guest: gate is opening message
@@ -123,10 +123,23 @@ Residents are any individuals for which that individual's cell phone number is r
 2. Owner
 3. Admin
 
-### Example Resident Scenario - opening the gate
-1. Resident arrives at the gate.
-2. A "open" message is sent to the gate text message system.
-3. The gate text message system receives and analyzes the message.  If the message is valid, the gate is opened, and a response text message is sent back to the requestor indicating the gate is being opened.
+### Example Resident (or Home Owner) Scenario - opening the gate
+```mermaid
+sequenceDiagram
+    autoNumber
+    actor resident as Resident or Home Owner
+    participant rpi as Gate Text Msg System
+    participant gate as Gate
+
+    resident->>+rpi: send 'open' message
+    rpi->>rpi: evaluate message
+    rpi->>gate: trigger gate to open
+    rpi->>resident: gate is opening message
+```
+1. Resident arrives at the gate, and sends an "open" message
+2. The gate text message system receives and analyzes the message.
+3. The gate is opened
+4. A response text message is sent back to the requestor indicating the gate is being opened.
 
 ## <a name="owners">Owners</a>
 Home owners have additional features available to them to be able to self-administer access to their property.  These features include:
@@ -134,6 +147,18 @@ Home owners have additional features available to them to be able to self-admini
 * removing users from accessing their property
 * viewing their property access configuration
 * viewing the access history for their property
+
+### Example Home Owner Scenario - adding a user
+TBD
+
+### Example Home Owner Scenario - removing a user
+TBD
+
+### Example Home Owner Scenario - view property access configuration
+TBD
+
+### Example Home Owner Scenario - view access history
+TBD
 
 ## <a name="administrators">Administrators</a>
 Administrators have all the same abilities as home owners, plus the ability to administer property setup on-behalf of other home owners.  A separate `Administrators Guide` is available for system administrators.
@@ -144,6 +169,7 @@ Interaction history is maintained for up to 1 month in the gate text message sys
 ## <a name="roles">Roles</a>
 There are several roles used by the gate text message system.  These roles are used to allow certain users access to system functions applicable to their role within the community.  These roles include:
 
+* Guest - Any user not recognized by the system
 * Resident - A user with limited access to the gate text messaging system.  Typically family members of homeowners within the community
 * Owner - A user who is a homeowner within the community
 * Admin - A user with elevated priveleges, so as to be able to maintain the system or configure the system on behalf of other users.
