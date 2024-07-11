@@ -30,7 +30,7 @@ The following options are available:
 - 'open' to open the gate
 - 'access list' to see the access configuration for your property
 - 'history' to see the usage history for your property
-- 'add << tn >> << role >>' adds a TN to access property (example: add 4048675309 resident)
+- 'add << tn >> << role (optional) >>' adds a TN to access property (example: add 4048675309).  The role of RESIDENT is the default
 - 'remove << tn >>' removes a TN from the system (example: remove 4048675309)
 
 ## <a name="Guests">Guests</a>
@@ -101,6 +101,6 @@ Below is a short summary of all the possible ways to interact with the gate text
 ### Owners (includes `Residents` commands)
 * access list - Responds to the requestor with property access configuration
 * history - Responds to the requestor with property access history.  See [history note](#history) regarding the history information available.
-* add << 10-digit phone number >> << role >> - Adds a phone number to the requestor's property configuration, assuming the phone number is not already configured in the system.  See [residents](#residents)
+* add << 10-digit phone number >> << role (optional) >> - Adds a phone number to the requestor's property configuration, assuming the phone number is not already configured in the system.  See [residents](#residents)
 * remove << 10-digit phone number >> << role >> - Removes a phone number from the requestor's property configuration.  See [residents](#residents)
 
