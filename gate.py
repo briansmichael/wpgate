@@ -24,6 +24,16 @@ def write_text_msg(filename, to, msg_body):
     text_msg.write(msg_body)
     text_msg.close()
 
+def write_group_text_msg(filename, group, msg_body):
+    text_msg = open("{0}{1}".format("/var/spool/sms/outgoing/", filename), "w")
+    for to in group:
+        text_msg.write("To: 1")
+        text_msg.write(str(to))
+        text_msg.write("\n")
+    text_msg.write("\n")
+    text_msg.write(msg_body)
+    text_msg.close()
+
 def send_open_gate_msg():
     msg = open("{0}{1}".format("/var/spool/sms/gate/", int(time.time())), "w")
     msg.write("open")
@@ -404,7 +414,9 @@ def open_gate(tn, command):
     add_history(get_id_for_user(tn), get_property_id_for_user(tn), tn, command, 1)
     inflight_ops = get_inflight_operations()
     if inflight_ops:
-        inflight_ops_property_id = inflight_ops[1]
+        inflight_ops_property_id = -1
+        if inflight_ops[1]:
+            inflight_ops_property_id = inflight_ops[1]
         if get_property_id_for_user(tn) == inflight_ops_property_id:
             filename = "{0}{1}{2}".format(inflight_ops[0], ".guestopen.", int(time.time()))
             write_text_msg(filename, tn, "The gate is opening")
@@ -593,11 +605,14 @@ def guest(tn, command):
         property_id = get_id_for_property(house_number)
         if property_id:
             home_owner_msg = re.sub(r'^.*?\s', "", command)
-            filename = "{0}{1}{2}".format(tn, ".guest.", int(time.time()))
+            sent_from = " (sent from {0})".format(tn)
+            text_msg = "{0}{1}".format(home_owner_msg, sent_from)
             for owner in get_owners_for_property(house_number):
-                sent_from = " (sent from {0})".format(tn)
-                write_text_msg(filename, owner[0], "{0}{1}".format(home_owner_msg, sent_from))
-                add_history(get_id_for_user(owner[0]), property_id, tn, command, 8)
+                owner_tn = owner[0]
+                filename = "{0}{1}{2}{3}{4}".format(tn, "_", owner_tn, ".guest.", int(time.time()))
+                # TODO write_group_text_msg(filename, owners, text_msg)
+                write_text_msg(filename, owner_tn, text_msg)
+                add_history(get_id_for_user(owner_tn), property_id, tn, command, 8)
             add_inflight_operation(tn, property_id)
         else:
             filename = "{0}{1}{2}".format(tn, ".invalid_msg_response.", int(time.time()))
@@ -605,7 +620,6 @@ def guest(tn, command):
     else:
         filename = "{0}{1}{2}".format(tn, ".invalid_msg_response.", int(time.time()))
         write_text_msg(filename, tn, invalid_msg)
-
 
 def help_response(tn, command, user_role_id):
     """Ex: help"""
